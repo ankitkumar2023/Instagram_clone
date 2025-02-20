@@ -4,6 +4,7 @@ import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 import bcrypt from "bcryptjs"
 import mongoose from "mongoose";
+import Post from "../models/post.model.js";
 
 
 const userRegisteration = async (req, res) => {
@@ -107,7 +108,18 @@ const userLoginVerification = async (req,res) => {
             sameSite: "strict",
             maxAge: 1 * 24 * 60 * 60 * 1000
         }
-
+        
+        //we want as soon as user logged in all the post the user posted get fetched
+        const userAllPosts = await Promise.all(
+            user.posts.map(async (postId) => {
+                const post = await Post.findById(postId)
+                if (post.author.equals(user._id)) {
+                    return post;
+            
+                }
+                return null
+            })
+        )
         //selecting fields that are to be send to frontend
         user = {
             _id: user._id,
@@ -117,7 +129,7 @@ const userLoginVerification = async (req,res) => {
             bio: user.bio,
             followers: user.followers,
             following: user.following,
-            posts: user.posts,
+            posts: userAllPosts,
             
             
         }

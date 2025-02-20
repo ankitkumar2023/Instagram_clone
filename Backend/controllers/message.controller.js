@@ -56,3 +56,38 @@ const sendMessage = async(req,res) => {
         })
     }
 }
+
+const getMessage = async(req,res) => {
+    try {
+        //steps
+        //get the sender id -- sender id is the one who is logged in
+        //get the receiver id -- receiver id is the one whom message box is opened
+        //get the conversation between them 
+        //if conversation happen between them then populate those messages
+        
+        const senderId = req.user.userId;
+        const receiverId = req.params.id;
+
+        const conversationBetweenThem = await Conversation.find({
+            participants: { $all: [senderId, receiverId] }
+        }).populate({path:"messages"});
+        
+        if (!conversationBetweenThem) {
+            return res.status(400).json({
+                message: "No conversation happen",
+                success: false,
+                conversation:{}
+            })
+        }
+
+        return res.status(200).json({
+            message: "conversation among them retrieve successfully",
+            success: true,
+            conversation:conversationBetweenThem?.messages
+        })
+    } catch (error) {
+        console.log("Error while retrieving the conversation between them",error)
+    }
+}
+
+export {sendMessage,getMessage}

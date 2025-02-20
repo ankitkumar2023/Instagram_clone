@@ -442,3 +442,16 @@ const BookmarkPost= async(req,res) => {
         })
     }
 }
+
+
+export {
+    addNewPost,
+    getAllPost,
+    getUserPost,
+    likePost,
+    disLikePost,
+    addComment,
+    getCommentOfParticularPost,
+    deletePost,
+    BookmarkPost
+}

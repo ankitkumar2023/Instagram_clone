@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCancel } from "react-icons/md";
 
-const CommentDialog = ({ isOpen, setIsOpen }) => {
+const CommentDialog = ({ isOpen, setIsOpen,post }) => {
   const [isClick, setIsClick] = useState(false);
     const [commentText, setCommentText] = useState("");
     
@@ -50,7 +50,7 @@ const CommentDialog = ({ isOpen, setIsOpen }) => {
         <div className="w-1/2 flex items-center justify-center">
           <img
             className="w-full h-full object-cover rounded-lg"
-            src="https://images.unsplash.com/photo-1739312025707-bbf6765973b3?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src={`${post?.image}`}
             alt="post_img"
           />
         </div>
@@ -60,12 +60,12 @@ const CommentDialog = ({ isOpen, setIsOpen }) => {
           {/* User Info */}
           <div className="flex items-center space-x-3 pb-3 border-b border-gray-300">
             <Link>
-              <Avatar name="C N" />
+              <Avatar src={`${post.author?.profilePicture}`} name={`${post.author?.username}`} />
             </Link>
 
             <div className="flex flex-col justify-center items-start">
               <p className="font-semibold text-gray-800">
-                <Link>Username</Link>
+                <Link>{post.author?.username }</Link>
               </p>
             </div>
 
@@ -104,9 +104,11 @@ const CommentDialog = ({ isOpen, setIsOpen }) => {
 
           {/* Comments */}
           <div className="flex-1 overflow-y-auto mt-2 space-y-2">
-            <p className="text-gray-600">This is a beautiful image! 🌿</p>
-            <p className="text-gray-600">Amazing shot! 📷🔥</p>
-            <p className="text-gray-600">Wow, love the vibe! 😍</p>
+            {post && (
+              post.comments.map((comment) => {
+                return <p className="text-gray-600">{ comment}</p>
+              })
+            )}
           </div>
 
           {/* Comment Input */}

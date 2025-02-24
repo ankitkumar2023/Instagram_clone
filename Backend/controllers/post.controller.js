@@ -72,19 +72,19 @@ const addNewPost = async(req,res) => {
 const getAllPost = async(req,res) => {
     try {
         const posts = await Post.find().sort({ createdAt: -1 })
-            .populate({ path: "author", select: "username,profilePicture" })
+            .populate({ path: "author", select: "username profilePicture" })
             .populate({
                 path: "comments",
                 sort: { createdAt: -1 },
                 populate: {
                     path: "author",
-                    select: "username,profilePicture"
+                    select: "username profilePicture"
                 }
             });
         return res.status(200).json({
             message: "All posts fetched",
             success: true,
-            posts:posts
+            posts
         })
         
     } catch (error) {
@@ -155,7 +155,7 @@ const likePost = async (req,res) => {
 
 
         return res.status(200).json({
-            message: "post liked successfully",
+            message: "post liked ",
             success:true
             
         })
@@ -189,7 +189,7 @@ const disLikePost = async(req,res) => {
 
 
         return res.status(200).json({
-            message: "post disliked successfully",
+            message: "post disliked ",
             success:true
         })
     } catch (error) {
@@ -325,8 +325,10 @@ const deletePost = async(req,res) => {
         //also delete the post id reffernce fron the user model-- because that model is also keeping track of the post id
         
         const postId = req.params.id;
+        // console.log("post id inside delete post controller",postId)
 
         const authorId = req.user.userId;
+        // console.log("user id inside delete post contoller",authorId)
 
 
         //searching for the particular post
@@ -354,7 +356,7 @@ const deletePost = async(req,res) => {
 
         //now also delete the post id refference from the user model
 
-        const user = await User.findById(userId);
+        const user = await User.findById(authorId);
         user.posts = user.posts.filter(id => id.toString() != postId);
 
         await user.save()

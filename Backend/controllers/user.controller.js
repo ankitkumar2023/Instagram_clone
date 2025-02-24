@@ -113,7 +113,7 @@ const userLoginVerification = async (req,res) => {
         const userAllPosts = await Promise.all(
             user.posts.map(async (postId) => {
                 const post = await Post.findById(postId)
-                if (post.author.equals(user._id)) {
+                if (post && post.author.equals(user._id)) {
                     return post;
             
                 }

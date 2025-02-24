@@ -6,6 +6,8 @@ import axios from 'axios'
 import { toast } from 'sonner'
 import { Link, useNavigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
+import { useDispatch } from 'react-redux'
+import { setAuthUser } from '../redux/slice/authSlice'
 
 
 
@@ -19,6 +21,8 @@ const Login = () => {
 
     const navigate = useNavigate();
 
+    const dispatch = useDispatch();
+
     const [loading,setLoading] = useState(false)
 
     const changeEventHandler = (e) => {
@@ -29,7 +33,7 @@ const Login = () => {
     };
     const handleLoginSubmit = async(e) => {
         e.preventDefault();
-        console.log("input checker", input);
+        console.log("input checker inside login component", input);
         try {
             setLoading(true);
             const response = await axios.post('http://localhost:8000/api/v1/user/login', input, {
@@ -39,7 +43,10 @@ const Login = () => {
                 withCredentials: true
             });
 
+            console.log("response from the backend while loggin",response)
+
             if (response.data.success) {
+                dispatch(setAuthUser(response.data.user))
                 navigate('/')
                 toast.success(response.data.message);
                 setInput({

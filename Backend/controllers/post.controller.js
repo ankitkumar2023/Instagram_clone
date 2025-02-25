@@ -208,10 +208,13 @@ const addComment = async(req,res) => {
         const postId = req.params.id;
         const userWhoCommented = req.user.userId;
         const { text } = req.body;
+        console.log("post id in add comment function in backend", postId);
+        console.log("user id in add comment function in backend", userWhoCommented);
+        console.log("post comment in add comment function in backend", text);
 
         if (!text) {
             return res.status(400).json({
-                message: " something Comment is required to add comment ",
+                message: "Comment is required to add comment ",
                 success:false
             })
         }
@@ -223,10 +226,11 @@ const addComment = async(req,res) => {
             text: text,
             author: userWhoCommented,
             post: postId
-        }).populate({path:"author", select:"username profilePicture"});
+        });
 
-        await newComment.save();
+        await newComment.populate({ path: "author", select: "username profilePicture" });
 
+        //also update the post model's comment
         post.comments.push(newComment._id)
         await post.save()
         

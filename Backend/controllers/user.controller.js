@@ -175,7 +175,8 @@ const getUserProfile = async (req,res) => {
             })
         }
 
-        let user = await User.findOne({ _id:userId });
+        let user = await User.findOne({ _id: userId });
+        
         console.log("user", user);
 
         if (!user) {
@@ -187,7 +188,8 @@ const getUserProfile = async (req,res) => {
 
         return res.status(201).json({
             message: "user profile successfully get",
-            user:user
+            success:true,
+            user
         })
     } catch (error) {
         console.log("error while fetching user profile",error)

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import store from '../redux/store'
 import { setAuthUser } from '../redux/slice/authSlice'
 import CreatePost from './CreatePost'
+import { setPosts } from '../redux/slice/PostSlice'
 
 
 
@@ -27,7 +28,8 @@ const LeftSideBar = () => {
             const response = await axios.get('http://localhost:8000/api/v1/user/logout', { withCredentials: true });
             if (response.data.success) {
                 dispatch(setAuthUser(null));
-                navigate('/login')
+                dispatch(setPosts([]))
+                navigate(`/login`)
                 toast.success(response.data.message)
             }
         } catch (error) {
@@ -44,10 +46,15 @@ const LeftSideBar = () => {
                 logoutHandler()
             } else if (sidebar == "Create") {
                 setIsOpen(true)
+            } else if (sidebar == "Profile") {
+                navigate(`/profile/${user?._id}`)
+            } else if (sidebar == "Home") {
+                navigate('/')
+            } else if (sidebar == "Notifications") {
+               navigate('/notification')
             }
-                
         } catch (error) {
-            
+            console.log(`Error while navigating to ${sidebar}`,error)
         }
     }
 
@@ -102,7 +109,8 @@ const LeftSideBar = () => {
                   )
               })
           }
-          <CreatePost isOpen={isOpen} setIsOpen={ setIsOpen} />
+          <CreatePost isOpen={isOpen} setIsOpen={setIsOpen} />
+          
     </div>
   )
 }

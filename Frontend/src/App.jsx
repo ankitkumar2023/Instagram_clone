@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import MainLayout from './components/MainLayout';
+import Notification from './components/Notification';
 
 const browserRouter = createBrowserRouter([
   {
@@ -16,7 +17,7 @@ const browserRouter = createBrowserRouter([
         element:<Home/>
       },
       {
-        path: '/profile',
+        path: '/profile/:id',
         element:<Profile  />
       }
     ]
@@ -28,6 +29,10 @@ const browserRouter = createBrowserRouter([
   {
     path: '/login',
     element:<Login/>
+  },
+  {
+    path: '/notification',
+    element:<Notification/>
   }
 ])
 

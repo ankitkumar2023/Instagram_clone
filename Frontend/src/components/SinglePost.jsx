@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import axios from "axios";
 import { setPosts } from "../redux/slice/PostSlice";
+import { LuBadgeCheck } from "react-icons/lu";
 
 const SinglePost = ({ post }) => {
   const [isClick, setIsClick] = useState(false);
@@ -21,11 +22,12 @@ const SinglePost = ({ post }) => {
   const dispatch = useDispatch();
   const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
   const [postLikedCount, setPostLikedCount] = useState(post.likes.length);
+  const [comment,setComment] = useState(post.comments)
 
   console.log("user detail inside single post page", user);
 
   const HandlerChange = (e) => {
-    // console.log(e.target.value)
+    console.log(e.target.value)
     if (e.target.value.trim() != "") {
       setText(e.target.value);
     } else {
@@ -69,6 +71,8 @@ const SinglePost = ({ post }) => {
         `http://localhost:8000/api/v1/post/${post?._id}/${userAction}`,
         { withCredentials: true }
       );
+
+      console.log("response from the backend tp frontend for like ,dislike ",res)
       if (res.data.success) {
         const updatedLikedCount = liked
           ? postLikedCount - 1
@@ -97,15 +101,41 @@ const SinglePost = ({ post }) => {
     }
   };
 
+  const addCommentHandler = async() => {
+    try {
+      const res = await axios.post(`http://localhost:8000/api/v1/post/${post?._id}/comment`, { text }, {
+        headers: {
+          "Content-Type":"application/json"
+        },
+        withCredentials:true
+      })
+
+      console.log("response for comment in frontend",res)
+
+      if (res.data.success) {
+        let updatedPostComments = [...comment, res.data.newComment];
+        setComment(updatedPostComments)
+
+        const updatedPostData = posts.map((postItem) => postItem?._id == post?._id ? { ...postItem, comments: updatedPostComments } : postItem);
+
+        dispatch(setPosts(updatedPostData));
+        toast.success(res.data.message)
+        setText("")
+      }
+    } catch (error) {
+      toast.error(error.response.data.message)
+    }
+  }
+
   const handleUnfollow = () => {
     try {
     } catch (error) {}
   };
 
   return (
-    <div className="my-6 w-full max-w-sm mx-auto relative ">
+    <div className="my-6 w-full max-w-sm mx-60 relative bg-gray-100 p-2 rounded-sm">
       <div className="flex items-center justify-between gap-2">
-        <Link>
+        <Link to={`/profile/${post.author?._id}`} >
           <div className="flex items-center gap-2 cursor-pointer">
             <Avatar
               src={`${post.author?.profilePicture}`}
@@ -114,6 +144,11 @@ const SinglePost = ({ post }) => {
               name={`${post.author?.username}`}
             />
             <h1>{post.author.username}</h1>
+            {
+              user?._id == post.author?._id && (<LuBadgeCheck className="bg-blue-400 rounded-full text-white"/>
+              )
+            }
+
           </div>
         </Link>
 
@@ -187,15 +222,24 @@ const SinglePost = ({ post }) => {
       <p>
         <span className="font-medium mr-2">{post.author?.username}</span>
       </p>
-      <span
-        onClick={() => {
-          console.log("View all comment clicked.."), setIsOpen(true);
-        }}
-        className="cursor-pointer text-sm text-gray-500"
-      >
-        View all {post.comments.length} comments
-      </span>
-      <CommentDialog isOpen={isOpen} setIsOpen={setIsOpen} post={post} />
+      {
+        comment.length > 0 && (<span
+          onClick={() => {
+            console.log("View all comment clicked.."), setIsOpen(true);
+          }}
+          className="cursor-pointer text-sm text-gray-500"
+        >
+          View all {comment.length} comments
+        </span>)
+      }
+      <CommentDialog
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        post={post}
+        text={text}
+        setText={setText}
+        addCommentHandler={addCommentHandler}
+        user={user} />
       <div className="flex justify-between items-center">
         <input
           type="text"
@@ -204,7 +248,7 @@ const SinglePost = ({ post }) => {
           placeholder="Add a comment...."
           className="outline-none text-sm w-full"
         />
-        {text && <span className="text-[#3BADF8]">Post</span>}
+        {text && <span onClick={addCommentHandler} className="text-[#3BADF8] cursor-pointer">Post</span>}
       </div>
     </div>
   );

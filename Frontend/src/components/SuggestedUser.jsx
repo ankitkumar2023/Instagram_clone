@@ -2,6 +2,7 @@ import React from "react";
 import Avatar from "./ui/Avatar";
 import useGetSuggestedUser from "../hooks/useGetSuggestedUser";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const SuggestedUser = () => {
   const { suggestedUsers } = useSelector((store) => store.auth);
@@ -20,16 +21,20 @@ const SuggestedUser = () => {
       <div className="space-y-3">
         {suggestedUsers.map((user, index) => (
           <div key={index} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <Link to={`/profile/${user?._id}`}><div className="flex items-center gap-3">
               <Avatar
                 src={`${user?.profilePicture}`}
                 name={`${user?.username}`}
               />
+
               <div>
+
                 <p className="text-sm font-semibold">{user?.username}</p>
                 <p className="text-xs text-gray-500">Suggested for you</p>
               </div>
+              
             </div>
+            </Link>
             <button className="text-xs font-semibold text-blue-500 hover:text-blue-700 hover:cursor-pointer">
               Follow
             </button>

@@ -168,14 +168,13 @@ const getUserProfile = async (req,res) => {
     try {
         const userId = req.params.id;
 
-        if (!userId) {
-            return res.status(401).json({
-                message: "User id can't found",
-                success:false
-            })
-        }
-
-        let user = await User.findOne({ _id: userId });
+        let user = await User.findById(userId).populate({
+            path: "posts",
+            createdAt: -1,
+            populate: {
+                path:"author"
+            }
+        }).populate({ path: "bookmarks" });
         
         console.log("user", user);
 

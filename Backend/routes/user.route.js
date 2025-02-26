@@ -9,7 +9,7 @@ router.route('/register').post(userRegisteration);
 router.route('/login').post(userLoginVerification);
 router.route('/logout').get(userLogout);
 router.route('/:id/profile').get(isAuthenticated, getUserProfile);
-router.route('/profile/edit').post(isAuthenticated, upload.single('profilePicture'), editLoggedInUserProfile);
+router.route('/profile/edit').post(isAuthenticated, upload.single('profilePhoto'), editLoggedInUserProfile);
 router.route('/suggested').get(isAuthenticated, getSuggestedUser);
 router.route('/followorunfollow/:id').post(isAuthenticated,followOrUnfollow)
 

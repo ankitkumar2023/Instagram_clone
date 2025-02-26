@@ -11,7 +11,7 @@ const RightSideBar = () => {
     <div className="w-[400px] h-screen px-5 py-6 fixed right-0 top-0 hidden lg:flex flex-col">
       {/* User Profile Section */}
       <div className="flex items-center justify-between">
-        <Link to={`/profile`} className="flex items-center gap-3">
+        <Link to={`/profile/${user?._id}`} className="flex items-center gap-3">
           <Avatar src={`${user?.profilePicture}`} name={`${user?.username}`} />
           <div>
             <p className="font-semibold text-gray-800">{user?.username}</p>

@@ -5,7 +5,9 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Profile from './components/Profile';
 import MainLayout from './components/MainLayout';
-import Notification from './components/Notification';
+
+import EditProfile from './components/EditProfile';
+import ChatPage from './components/ChatPage';
 
 const browserRouter = createBrowserRouter([
   {
@@ -19,6 +21,14 @@ const browserRouter = createBrowserRouter([
       {
         path: '/profile/:id',
         element:<Profile  />
+      },
+      {
+        path: '/account/edit',
+        element:<EditProfile/>
+      },
+      {
+        path: '/chat',
+        element:<ChatPage/>
       }
     ]
   },
@@ -30,10 +40,7 @@ const browserRouter = createBrowserRouter([
     path: '/login',
     element:<Login/>
   },
-  {
-    path: '/notification',
-    element:<Notification/>
-  }
+  
 ])
 
 function App() {

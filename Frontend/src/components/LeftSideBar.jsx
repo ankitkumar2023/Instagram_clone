@@ -52,6 +52,8 @@ const LeftSideBar = () => {
                 navigate('/')
             } else if (sidebar == "Notifications") {
                navigate('/notification')
+            } else if (sidebar == "Messages") {
+                navigate('/chat')
             }
         } catch (error) {
             console.log(`Error while navigating to ${sidebar}`,error)

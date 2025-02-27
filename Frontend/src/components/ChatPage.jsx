@@ -80,7 +80,7 @@ const ChatPage = () => {
 
       {/* Chat Area */}
       {selectedUser ? (
-        <section className="flex-1 flex flex-col h-full bg-white shadow-md">
+        <section className="flex-1 flex flex-col h-full  bg-white shadow-md">
           {/* Chat Header */}
           {/* Chat Header */}
           <div className="flex gap-3 items-center px-4 py-2 border-b border-gray-300 sticky top-0 bg-white z-10">

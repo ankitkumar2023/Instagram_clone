@@ -6,24 +6,30 @@ import { setMessages } from '../redux/slice/chatSlice'
 
 const useGetAllMessages = () => {
     console.log("useGetAllMessages hook is running")
-    const {selectedUser} = useSelector(store=>store.chat)
+    const { selectedUser } = useSelector(store => store.chat)
+    console.log("selected user",selectedUser)
     const dispatch = useDispatch();
     useEffect(() => {
-        
+        if (!selectedUser) {
+            dispatch(setMessages([])); // Clear messages when no user is selected
+            return;
+        }
+    
         const fetchAllMessages = async () => {
             try {
-                const res = await axios.get(`http://localhost:8000/api/v1/message/all/${selectedUser?._id}`, { withCredentials: true });
+                dispatch(setMessages([])); // Clear messages before fetching new ones
+                const res = await axios.get(`http://localhost:8000/api/v1/message/all/${selectedUser._id}`, { withCredentials: true });
                 if (res.data.success) {
-                    console.log("all messages data", res.data.conversation);
-                    dispatch(setMessages(res.data.conversation))
+                    dispatch(setMessages(res.data.conversation));
                 }
             } catch (error) {
-                console.log("Error while fetching all post data in frontend")
+                console.log("Error while fetching all message data in frontend");
             }
-            
-        }
+        };
+    
         fetchAllMessages();
-    }, [selectedUser]);
+    }, [selectedUser, dispatch]);
+    
   
 }
 

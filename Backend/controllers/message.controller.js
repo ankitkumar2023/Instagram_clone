@@ -16,7 +16,8 @@ const sendMessage = async(req,res) => {
         const senderId = req.user.userId;
         const receiverId = req.params.id;
 
-        const { message } = req.body;
+        const { textMessage: message } = req.body;
+        console.log("send message at backend controller",message)
 
         let conversation = await Conversation.findOne({
             participants:{$all:[senderId,receiverId]}
@@ -74,7 +75,7 @@ const getMessage = async(req,res) => {
         const senderId = req.user.userId;
         const receiverId = req.params.id;
 
-        const conversationBetweenThem = await Conversation.find({
+        const conversationBetweenThem = await Conversation.findOne({
             participants: { $all: [senderId, receiverId] }
         }).populate({path:"messages"});
         

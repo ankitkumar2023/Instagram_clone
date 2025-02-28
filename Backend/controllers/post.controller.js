@@ -3,7 +3,7 @@ import cloudinary from "../utils/cloudinary.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Comment from "../models/comment.model.js";
-import { getReceiverSocketId } from "../socket/socket.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 
 const addNewPost = async(req,res) => {
@@ -128,129 +128,119 @@ const getUserPost = async(req,res) => {
     }
 }
 
-const likePost = async (req,res) => {
+const likePost = async (req, res) => {
     try {
-        //so a post can only be liked by the user who is logged in
-        //so we first get the post id from the frontend
-        //we find that particular post
-        //we will update the likes array in the post and add the user id who liked it
-        //we will implement the socketio fro real time notification
-
         const userWhoLikes = req.user.userId;
+        console.log("User who likes:", userWhoLikes);
         const postId = req.params.id;
 
-        //findind that particular post
+        // Finding the post
         const post = await Post.findById(postId);
 
         if (!post) {
             return res.status(404).json({
-                message: "post not found",
-                success:false
-            })
+                message: "Post not found",
+                success: false
+            });
         }
 
-        await post.updateOne({ $addToSet: { likes: userWhoLikes } });
-        await post.save();
+        // Add user ID to likes array (ensures no duplicates)
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            { $addToSet: { likes: userWhoLikes } },
+            { new: true }
+        );
 
-        //Implementation of socket io for real time notification
-
-        //find the user who like
-        const user = await User.findById(userWhoLikes).select("-password")
-
-        //find the post owner whose post got liked
+        // Finding user details
+        const user = await User.findById(userWhoLikes).select("-password");
         const postOwnerId = post.author.toString();
 
-        //we want if the post's owner and user who like are same then dont send notification
-
-        if (postOwnerId != userWhoLikes) {
-            
-            //we will send the notification
+        if (postOwnerId !== userWhoLikes) {
             const notification = {
                 type: "like",
                 userId: userWhoLikes,
                 userDetails: user,
                 postId,
-                message:`your post was liked by ${user?.username}`
-            }
+                message: `Your post was liked by ${user?.username}`
+            };
 
             const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-            io.to(postOwnerSocketId).emit("notification",notification)
+            if (postOwnerSocketId) {
+                io.to(postOwnerSocketId).emit("notification", notification);
+            }
         }
-        
-
-
 
         return res.status(200).json({
-            message: "post liked ",
-            success:true
-            
-        })
+            message: "Post liked",
+            success: true,
+            likes: updatedPost.likes
+        });
     } catch (error) {
         console.log("Error while liking the post", error);
-        return res.status(501).json({
+        return res.status(500).json({
             message: "Error while liking the post",
             error,
-            success:false
-        })
+            success: false
+        });
     }
-    
-}
+};
 
-const disLikePost = async(req,res) => {
+const disLikePost = async (req, res) => {
     try {
-        const whoDisLike = req.user.userId;
+        const userWhoDislikes = req.user.userId;
+        console.log("User who dislikes:", userWhoDislikes);
         const postId = req.params.id;
 
         const post = await Post.findById(postId);
 
-        if (!post) res.status(404).json({
-            message: "post not found",
-            success: false
-        })
+        if (!post) {
+            return res.status(404).json({
+                message: "Post not found",
+                success: false
+            });
+        }
 
-        await post.updateOne({ $pull: { likes: whoDisLike } });
-        post.save();
+        // Remove user ID from likes array
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId,
+            { $pull: { likes: userWhoDislikes } },
+            { new: true }
+        );
 
-        //Implementation of socket io for real time notification
+        // Finding user details
+        const user = await User.findById(userWhoDislikes).select("-password");
+        const postOwnerId = post.author.toString();
 
-         //find the user who like
-         const user = await User.findById(userWhoLikes).select("-password")
+        if (postOwnerId !== userWhoDislikes) {
+            const notification = {
+                type: "dislike",
+                userId: userWhoDislikes,
+                userDetails: user,
+                postId,
+                message: `Your post was disliked by ${user?.username}`
+            };
 
-         //find the post owner whose post got liked
-         const postOwnerId = post.author.toString();
- 
-         //we want if the post's owner and user who like are same then dont send notification
- 
-         if (postOwnerId != userWhoLikes) {
-             
-             //we will send the notification
-             const notification = {
-                 type: "dislike",
-                 userId: userWhoLikes,
-                 userDetails: user,
-                 postId,
-                 message:`your post was disliked by ${user?.username}`
-             }
- 
-             const postOwnerSocketId = getReceiverSocketId(postOwnerId);
-             io.to(postOwnerSocketId).emit("notification",notification)
-         }
-   
-
+            const postOwnerSocketId = getReceiverSocketId(postOwnerId);
+            if (postOwnerSocketId) {
+                io.to(postOwnerSocketId).emit("notification", notification);
+            }
+        }
 
         return res.status(200).json({
-            message: "post disliked ",
-            success:true
-        })
+            message: "Post disliked",
+            success: true,
+            likes: updatedPost.likes
+        });
     } catch (error) {
         console.log("Error while disliking the post", error);
         return res.status(500).json({
-            message: "Error while disliking gthe post",
+            message: "Error while disliking the post",
             error,
-            success:false
-        })
+            success: false
+        });
     }
-}
+};
+
 
 
 const addComment = async(req,res) => {

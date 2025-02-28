@@ -10,10 +10,7 @@ import { setAuthUser } from '../redux/slice/authSlice'
 import CreatePost from './CreatePost'
 import { setPosts } from '../redux/slice/PostSlice'
 
-
-
 const LeftSideBar = () => {
-
     const [isOpen, setIsOpen] = useState(false);
 
     const navigate = useNavigate();
@@ -22,6 +19,7 @@ const LeftSideBar = () => {
     console.log("user detail fetching in leftside bar from redux", user)
     console.log("Current Redux State inside leftside bar:", store.getState());
 
+    const { likeNotifications } = useSelector(store => store.realTimeNotification);
 
     const logoutHandler = async() => {
         try {
@@ -37,11 +35,8 @@ const LeftSideBar = () => {
         }
     }
 
-    
-
     const sideBarHandler= (sidebar) => {
         try {
-            // alert(sidebar)
             if (sidebar == "Logout") {
                 logoutHandler()
             } else if (sidebar == "Create") {
@@ -56,7 +51,7 @@ const LeftSideBar = () => {
                 navigate('/chat')
             }
         } catch (error) {
-            console.log(`Error while navigating to ${sidebar}`,error)
+            console.log(`Error while navigating to ${sidebar}`, error)
         }
     }
 
@@ -94,27 +89,49 @@ const LeftSideBar = () => {
             text:"Logout"
         }
     ]
-  return (
-      <div className='fixed top-0 z-10 left-0 w-[18%] h-screen border-r border-gray-300 flex flex-col  gap-5 justify-evenly pt-10 pb-10'>
-          <div className='text-center text-xl font-medium from-neutral-700 font-sans'>Instagram</div>
-          {
-              sideBarItems.map((item,index) => {
-                  return (
-                      <div
-                          key={index}
-                          className='flex items-center gap-4 w-[90%] h-12 ml-3 pl-2   relative hover:bg-gray-200 border-gray-200 rounded-xl cursor-pointer '
-                          onClick={()=>sideBarHandler(item.text)}
-                      >
-                          {item.icon}
-                          <span>{ item.text}</span>
-                      </div>
-                  )
-              })
-          }
-          <CreatePost isOpen={isOpen} setIsOpen={setIsOpen} />
-          
-    </div>
-  )
+
+    return (
+        <div className='fixed top-0 z-10 left-0 w-[18%] h-screen border-r border-gray-300 flex flex-col gap-5 justify-evenly pt-10 pb-10'>
+            <div className='text-center text-xl font-medium from-neutral-700 font-sans'>Instagram</div>
+            {
+                sideBarItems.map((item, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className='flex items-center gap-4 w-[90%] h-12 ml-3 pl-2 relative hover:bg-gray-200 border-gray-200 rounded-xl cursor-pointer'
+                            onClick={() => sideBarHandler(item.text)}
+                        >
+                            {item.icon}
+                            <span>{item.text}</span>
+
+                            {
+                                item.text == "Notifications" && likeNotifications.length > 0 && (
+                                    <div className='rounderd-full flex justify-center items-center'>
+                                        {likeNotifications.length}
+                                        <div>
+                                            {
+                                                likeNotifications.length == 0 ? (<p>No new notification</p>) : (
+                                                    likeNotifications.map((notification) => {
+                                                        return (
+                                                            <div>
+                                                                <Avatar src={notification?.userDetails?.profilePicture} />
+                                                                <p><span>{notification.userDetails?.username} liked your post</span></p>
+                                                            </div>
+                                                        )
+                                                    })
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )
+                })
+            }
+            <CreatePost isOpen={isOpen} setIsOpen={setIsOpen} />
+        </div>
+    )
 }
 
 export default LeftSideBar

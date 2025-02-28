@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const PostSlice = createSlice({
     name: "post",
     initialState: {
-        posts: []
+        posts: [],
+       
     },
     reducers: {
         setPosts: (state, action) => { // ✅ Fix: Correct parameter order (state first)

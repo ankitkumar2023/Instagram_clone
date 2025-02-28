@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSocket } from './redux/slice/socketSlice';
 import { setOnLineUsers } from './redux/slice/chatSlice';
+import { setLikeNotifications } from './redux/slice/notificationSlice';
 
 const browserRouter = createBrowserRouter([
   {
@@ -62,11 +63,19 @@ function App() {
       });
       dispatch(setSocket(socketio));
 
-      //listning all the events that are commin g=from the backend
+      //listning all the events that are comming from the backend
 
       socketio.on("getOnlineUsers", (onlineUsers) => {
         dispatch(setOnLineUsers(onlineUsers));
       });
+
+      //for notification
+
+      socketio.on("notification", (notification) => {
+        dispatch(setLikeNotifications(notification))
+      })
+
+
 
       //cleanup function for-->like user dont logout but close the tab for
       //for that scenario also user should go offline

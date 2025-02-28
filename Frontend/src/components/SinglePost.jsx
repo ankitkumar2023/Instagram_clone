@@ -67,39 +67,33 @@ const SinglePost = ({ post }) => {
   const likeAndDislikeHandler = async () => {
     const userAction = liked ? "dislike" : "like";
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/v1/post/${post?._id}/${userAction}`,
-        { withCredentials: true }
-      );
-
-      console.log("response from the backend tp frontend for like ,dislike ",res)
-      if (res.data.success) {
-        const updatedLikedCount = liked
-          ? postLikedCount - 1
-          : postLikedCount + 1;
-
-        setPostLikedCount(updatedLikedCount);
-
-        setLiked(!liked);
-
-        //updating my post slice in redux so that the like will get hold
-        const updatedPostData = posts.map((postItem) =>
-          postItem?._id == post?._id
-            ? {
-                ...postItem,
-                likes: liked
-                  ? postItem.likes.filter((uId) => uId != user?._id)
-                  : [...postItem.likes, user?._id],
-              }
-            : postItem
+        const res = await axios.get(
+            `http://localhost:8000/api/v1/post/${post?._id}/${userAction}`,
+            { withCredentials: true }
         );
-        dispatch(setPosts(updatedPostData));
-        toast.success(res.data.message);
-      }
+
+        if (res.data.success) {
+            const updatedPostData = posts.map((postItem) =>
+                postItem?._id === post?._id
+                    ? {
+                          ...postItem,
+                          likes: liked
+                              ? postItem.likes.filter((uId) => uId !== user?._id)
+                              : [...postItem.likes, user?._id],
+                      }
+                    : postItem
+            );
+
+            dispatch(setPosts(updatedPostData)); // Update global Redux state
+            setLiked(!liked); // Update local state for immediate UI change
+            setPostLikedCount(liked ? postLikedCount - 1 : postLikedCount + 1);
+            toast.success(res.data.message);
+        }
     } catch (error) {
-      toast.error(error.response.data.message);
+        toast.error(error.response.data.message);
     }
-  };
+};
+
 
   const addCommentHandler = async() => {
     try {
@@ -131,6 +125,18 @@ const SinglePost = ({ post }) => {
     try {
     } catch (error) {}
   };
+
+  const handleBookmark = async() => {
+    try {
+      const res = await axios.get(`http://localhost:8000/api/v1/post/${post?._id}/bookmark`, { withCredentials: true });
+      if (res.data.success) {
+        toast.success(res.data.message)
+      }
+    } catch (error) {
+      console.log(Error)
+      
+    }
+  }
 
   return (
     <div className="my-6 w-full max-w-sm mx-60 relative bg-gray-100 p-2 rounded-sm">
@@ -216,7 +222,7 @@ const SinglePost = ({ post }) => {
           />
           <Send className="w-6 h-6 cursor-pointer hover:text-gray-600" />
         </div>
-        <Bookmark className="cursor-pointer hover:text-gray-600" />
+        <Bookmark onClick={handleBookmark} className="cursor-pointer hover:text-gray-600" />
       </div>
       <span className="font-medium block mb-2">{postLikedCount} likes</span>
       <p>

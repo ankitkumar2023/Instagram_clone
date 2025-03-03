@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DialogBoxModal from "./ui/DialogBox";
 import Avatar from "./ui/Avatar";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,14 +20,16 @@ const CreatePost = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
 
   const FileChangeHandler = async (e) => {
+    console.log("files in createPost page", e.target.files);
     const file = e.target.files?.[0];
     if (file) {
       setUploadedFile(file);
       const dataURL = await readFileAsDataURL(file);
-      console.log("image dataUrl",dataURL)
+      // console.log("image dataUrl",dataURL)
       setImagePreview(dataURL);
     }
   };
+ 
 
   const createPostHandler = async (e) => {
     setLoading(true)

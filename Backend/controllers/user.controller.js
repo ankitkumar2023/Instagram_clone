@@ -256,7 +256,7 @@ const getSuggestedUser = async (req,res) => {
 
         const suggestedUsers = await User.find({ _id: { $ne: userId } }).select("-password");
 
-        if (!suggestedUsers) {
+        if (!suggestedUsers.length ==0) {
             return res.status(400).json({
                 message: "Currently do not have any users",
                 success:false
@@ -277,60 +277,62 @@ const getSuggestedUser = async (req,res) => {
     }
 }
 
-const followOrUnfollow = async (req,res) => {
+const followOrUnfollow = async (req, res) => {
     try {
-        const whoFollows = req.user.userId;
-        const whomFollows = req.params.id;
-
-        //check whether the follow's id and following's id is not same
-        if (whoFollows === whomFollows) {
-            return res.status(400).json({
-                message: "You cant follow/unfollow yorself",
-                success:false
-            })
-        }
-
-        const user = await User.findById(whoFollows);
-        const TargetUser = await User.findById(whomFollows);
-
-        if (!user || !TargetUser) {
-            return res.status(400).json({
-                message: "User not found",
-                success:false
-            })
-        }
-
-        //check whether user follows the target user or not
-        const isFollowing = await user.following.includes(whomFollows);
-
-        if (isFollowing) {
-            //unfollow logic
-
-            await Promise.all([
-                User.updateOne({ _id: whoFollows }, { $pull: { following: whomFollows } }),
-                User.updateOne({ _id: whomFollows}, { $pull: { followers: whoFollows } } )
-            ])
-            return res.status(200).json({
-                message: "Unfollowed successfully",
-                success:true
-            })
-        }
-        else {
-            //follow
-            await Promise.all([
-                User.updateOne({ _id: whoFollows }, { $push: { following: whomFollows } }),
-                User.updateOne({ _id: whomFollows }, { $push: { followers: whoFollows } }),
-                
-            ])
-            return res.status(200).json({
-                message: "Followed successfully",
-                success:true
-            })
-        }
+      const whoFollows = req.user.userId;
+      const whomFollows = req.params.id;
+  
+      if (whoFollows === whomFollows) {
+        return res.status(400).json({
+          message: "You can't follow/unfollow yourself",
+          success: false,
+        });
+      }
+  
+      const user = await User.findById(whoFollows);
+      const targetUser = await User.findById(whomFollows);
+  
+      if (!user || !targetUser) {
+        return res.status(400).json({
+          message: "User not found",
+          success: false,
+        });
+      }
+  
+      const isFollowing = user.following.includes(whomFollows);
+  
+      if (isFollowing) {
+        // Unfollow logic
+        await Promise.all([
+          User.updateOne({ _id: whoFollows }, { $pull: { following: whomFollows } }),
+          User.updateOne({ _id: whomFollows }, { $pull: { followers: whoFollows } }),
+        ]);
+      } else {
+        // Follow logic
+        await Promise.all([
+          User.updateOne({ _id: whoFollows }, { $push: { following: whomFollows } }),
+          User.updateOne({ _id: whomFollows }, { $push: { followers: whoFollows } }),
+        ]);
+      }
+  
+      // Fetch the updated user
+      const updatedUser = await User.findById(whoFollows);
+  
+      return res.status(200).json({
+        message: isFollowing ? "Unfollowed successfully" : "Followed successfully",
+        success: true,
+        user: updatedUser, // Send updated user back
+      });
     } catch (error) {
-        
+      console.log("Error while follow or unfollow", error);
+      return res.status(500).json({
+        message: "Error while follow or unfollow",
+        success: false,
+        error,
+      });
     }
-}
+  };
+  
 
 export {
     userRegisteration,

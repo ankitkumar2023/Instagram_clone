@@ -1,19 +1,21 @@
 import { createBrowserRouter, RouterProvider, } from 'react-router-dom';
-import Signup from './components/signup';
-import Login from './components/Login';
 
-import Home from './components/Home';
-import Profile from './components/Profile';
-import MainLayout from './components/MainLayout';
+import Login from './components/Login.jsx';
 
-import EditProfile from './components/EditProfile';
-import ChatPage from './components/ChatPage';
+import Home from './components/Home.jsx';
+import Profile from './components/Profile.jsx';
+import MainLayout from './components/MainLayout.jsx';
+// import Signup from "./components/Signup.jsx"
+
+import EditProfile from './components/EditProfile.jsx';
+import ChatPage from './components/ChatPage.jsx';
 import {io} from "socket.io-client"
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSocket } from './redux/slice/socketSlice';
 import { setOnLineUsers } from './redux/slice/chatSlice';
 import { setLikeNotifications } from './redux/slice/notificationSlice';
+import Signup from './components/Signup.jsx';
 
 const browserRouter = createBrowserRouter([
   {

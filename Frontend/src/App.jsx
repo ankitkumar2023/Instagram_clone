@@ -80,7 +80,6 @@ function App() {
 
 
       //cleanup function for-->like user dont logout but close the tab for
-      //for that scenario also user should go offline
       return () => {
         socketio.close();
         dispatch(setSocket(null))

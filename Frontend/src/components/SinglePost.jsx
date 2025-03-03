@@ -46,7 +46,7 @@ const SinglePost = ({ post }) => {
   const deletePostHandler = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/post/delete/${post?._id}`,
+        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/delete/${post?._id}`,
         {},
         { withCredentials: true }
       );
@@ -67,76 +67,85 @@ const SinglePost = ({ post }) => {
   const likeAndDislikeHandler = async () => {
     const userAction = liked ? "dislike" : "like";
     try {
-        const res = await axios.get(
-            `http://localhost:8000/api/v1/post/${post?._id}/${userAction}`,
-            { withCredentials: true }
+      const res = await axios.get(
+        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/${post?._id}/${userAction}`,
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        const updatedPostData = posts.map((postItem) =>
+          postItem?._id === post?._id
+            ? {
+                ...postItem,
+                likes: liked
+                  ? postItem.likes.filter((uId) => uId !== user?._id)
+                  : [...postItem.likes, user?._id],
+              }
+            : postItem
         );
 
-        if (res.data.success) {
-            const updatedPostData = posts.map((postItem) =>
-                postItem?._id === post?._id
-                    ? {
-                          ...postItem,
-                          likes: liked
-                              ? postItem.likes.filter((uId) => uId !== user?._id)
-                              : [...postItem.likes, user?._id],
-                      }
-                    : postItem
-            );
-
-            dispatch(setPosts(updatedPostData)); // Update global Redux state
-            setLiked(!liked); // Update local state for immediate UI change
-            setPostLikedCount(liked ? postLikedCount - 1 : postLikedCount + 1);
-            toast.success(res.data.message);
-        }
+        dispatch(setPosts(updatedPostData)); // Update global Redux state
+        setLiked(!liked); // Update local state for immediate UI change
+        setPostLikedCount(liked ? postLikedCount - 1 : postLikedCount + 1);
+        toast.success(res.data.message);
+      }
     } catch (error) {
-        toast.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
-};
+  };
 
-
-  const addCommentHandler = async() => {
+  const addCommentHandler = async () => {
     try {
-      const res = await axios.post(`http://localhost:8000/api/v1/post/${post?._id}/comment`, { text }, {
-        headers: {
-          "Content-Type":"application/json"
-        },
-        withCredentials:true
-      })
+      const res = await axios.post(
+        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/${post?._id}/comment`,
+        { text },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
 
-      console.log("response for comment in frontend",res)
+      console.log("response for comment in frontend", res);
 
       if (res.data.success) {
         let updatedPostComments = [...comment, res.data.newComment];
-        setComment(updatedPostComments)
+        setComment(updatedPostComments);
 
-        const updatedPostData = posts.map((postItem) => postItem?._id == post?._id ? { ...postItem, comments: updatedPostComments } : postItem);
+        const updatedPostData = posts.map((postItem) =>
+          postItem?._id == post?._id
+            ? { ...postItem, comments: updatedPostComments }
+            : postItem
+        );
 
         dispatch(setPosts(updatedPostData));
-        toast.success(res.data.message)
-        setText("")
+        toast.success(res.data.message);
+        setText("");
       }
     } catch (error) {
-      toast.error(error.response.data.message)
+      toast.error(error.response.data.message);
     }
-  }
+  };
 
   const handleUnfollow = () => {
     try {
     } catch (error) {}
   };
 
-  const handleBookmark = async() => {
+  const handleBookmark = async () => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/v1/post/${post?._id}/bookmark`, { withCredentials: true });
+      const res = await axios.get(
+        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/${post?._id}/bookmark`,
+        { withCredentials: true }
+      );
       if (res.data.success) {
-        toast.success(res.data.message)
+        toast.success(res.data.message);
       }
     } catch (error) {
-      console.log(Error)
-      
+      console.log(Error);
     }
-  }
+  };
 
   return (
     <div className="my-6 w-full max-w-sm mx-60 relative bg-gray-100 p-2 rounded-sm">

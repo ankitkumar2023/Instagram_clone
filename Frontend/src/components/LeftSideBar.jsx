@@ -23,7 +23,10 @@ const LeftSideBar = () => {
 
     const logoutHandler = async() => {
         try {
-            const response = await axios.get('http://localhost:8000/api/v1/user/logout', { withCredentials: true });
+            const response = await axios.get(
+              "https://instagram-clone-mu-weld.vercel.app/api/v1/user/logout",
+              { withCredentials: true }
+            );
             if (response.data.success) {
                 dispatch(setAuthUser(null));
                 dispatch(setPosts([]));

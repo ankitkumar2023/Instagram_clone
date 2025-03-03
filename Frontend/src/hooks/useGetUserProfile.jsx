@@ -10,9 +10,9 @@ const useGetUserProfile = (userId) => {
     const fetchUserProfile = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/v1/user/${userId}/profile`,
+          `https://instagram-clone-mu-weld.vercel.app/api/v1/user/${userId}/profile`,
           { withCredentials: true }
-          );
+        );
           console.log("user profile data",res.data.user)
           
           if (res.data.success) {

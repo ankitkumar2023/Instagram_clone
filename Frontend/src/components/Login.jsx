@@ -36,12 +36,16 @@ const Login = () => {
         console.log("input checker inside login component", input);
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:8000/api/v1/user/login', input, {
+            const response = await axios.post(
+              "https://instagram-clone-mu-weld.vercel.app/api/v1/user/login",
+              input,
+              {
                 header: {
-                    'Content-Type': 'application/json'
+                  "Content-Type": "application/json",
                 },
-                withCredentials: true
-            });
+                withCredentials: true,
+              }
+            );
 
             console.log("response from the backend while loggin",response)
 

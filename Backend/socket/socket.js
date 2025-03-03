@@ -8,7 +8,7 @@ const server = http.createServer(app);
 // Setting up the Socket.io server
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:5173',
+        origin: 'https://instagram-clone-mu-weld.vercel.app',
         methods: ["GET", "POST"]
     }
 });

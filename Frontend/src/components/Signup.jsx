@@ -30,12 +30,17 @@ const Signup = () => {
         
         try {
             setLoading(true);
-            const response = await axios.post('http://localhost:8000/api/v1/user/register', input, {
-                headers: { // ✅ Corrected "header" to "headers"
-                    'Content-Type': 'application/json'
+            const response = await axios.post(
+              "https://instagram-clone-mu-weld.vercel.app/api/v1/user/register",
+              input,
+              {
+                headers: {
+                  // ✅ Corrected "header" to "headers"
+                  "Content-Type": "application/json",
                 },
-                withCredentials: true
-            });
+                withCredentials: true,
+              }
+            );
 
             if (response.data.success) {
                 navigate('/login');

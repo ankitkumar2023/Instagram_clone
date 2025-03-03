@@ -38,12 +38,16 @@ const CreatePost = ({ isOpen, setIsOpen }) => {
     
     if(imagePreview) formData.append("image",uploadedFile)
       try {
-        const res = await axios.post(`http://localhost:8000/api/v1/post/addpost`, formData, {
-          headers: {
-              "Content-Type":"multipart/form-data"
-          },
-          withCredentials:true
-        })
+        const res = await axios.post(
+          `https://instagram-clone-mu-weld.vercel.app/api/v1/post/addpost`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        );
         if (res.data.success) {
           dispatch(setPosts([res.data.post,...posts]))
           toast.success(res.data.message)

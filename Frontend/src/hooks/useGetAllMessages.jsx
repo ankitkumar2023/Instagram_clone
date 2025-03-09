@@ -19,7 +19,7 @@ const useGetAllMessages = () => {
             try {
                 dispatch(setMessages([])); // Clear messages before fetching new ones
                 const res = await axios.get(
-                  `https://instagram-clone-mu-weld.vercel.app/api/v1/message/all/${selectedUser._id}`,
+                  `http://localhost:8000/api/v1/message/all/${selectedUser._id}`,
                   { withCredentials: true }
                 );
                 if (res.data.success) {

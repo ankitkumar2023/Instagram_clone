@@ -7,7 +7,8 @@ import useGetSuggestedUser from '../hooks/useGetSuggestedUser'
 
 const Home = () => {
   useGetAllPost();
-  useGetSuggestedUser();
+  console.log("calling useGetsuggestedUser Hook ", useGetSuggestedUser())
+  useGetSuggestedUser()
   return (
       <div className='flex'>
           <div className="flex-grow">

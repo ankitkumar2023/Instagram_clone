@@ -44,7 +44,7 @@ const EditProfile = () => {
         try {
             setLoading(true)
             const res = await axios.post(
-              `https://instagram-clone-mu-weld.vercel.app/api/v1/user/profile/edit`,
+              `http://localhost:8000/api/v1/user/profile/edit`,
               formData,
               {
                 headers: {

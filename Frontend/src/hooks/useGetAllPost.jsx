@@ -10,7 +10,7 @@ const useGetAllPost = () => {
         const fetchAllPost = async () => {
             try {
                 const res = await axios.get(
-                  "https://instagram-clone-mu-weld.vercel.app/api/v1/post/all",
+                  "http://localhost:8000/api/v1/post/all",
                   { withCredentials: true }
                 );
                 if (res.data.success) {

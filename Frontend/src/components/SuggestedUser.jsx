@@ -16,7 +16,7 @@ const SuggestedUser = () => {
   const handleFollowOrUnFollow = async (suggesteduser) => {
     try {
       const res = await axios.post(
-        `https://instagram-clone-mu-weld.vercel.app/api/v1/user/followorunfollow/${suggesteduser?._id}`,
+        `http://localhost:8000/api/v1/user/followorunfollow/${suggesteduser?._id}`,
         {},
         { withCredentials: true }
       );

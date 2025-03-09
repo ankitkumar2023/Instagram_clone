@@ -245,37 +245,44 @@ const editLoggedInUserProfile = async (req, res) => {
 };
 
 
-const getSuggestedUser = async (req,res) => {
+const getSuggestedUser = async (req, res) => {
     try {
+        const userId = req?.user?.userId; // Ensure userId is valid
+        if (!userId) {
+            return res.status(401).json({ 
+                message: "User not authenticated", 
+                success: false 
+            });
+        }
 
-        //so we want to find all the user id except the person who is logged in
-        //so we get the person id who is logged in from the middleware
-        const userId = req.user.userId;
+        console.log("User logged in getSuggestedUser:", userId);
 
-        //now get the all user data
-
+        // Fetch all users except the logged-in user
         const suggestedUsers = await User.find({ _id: { $ne: userId } }).select("-password");
 
-        if (!suggestedUsers.length ==0) {
-            return res.status(400).json({
-                message: "Currently do not have any users",
-                success:false
-            })
+        if (suggestedUsers.length === 0) { // ✅ Fixed Condition
+            return res.status(200).json({
+                message: "No users found",
+                success: false, // This should be `false`, not `400 Bad Request`
+                users: [],
+            });
         }
 
         return res.status(200).json({
-            message:"All suggested user successfully fetched",
+            message: "All suggested users successfully fetched",
             success: true,
-            users:suggestedUsers
-        })
+            users: suggestedUsers
+        });
+
     } catch (error) {
-        console.log("Error while fetching the suggested user details", error);
+        console.error("Error while fetching the suggested users:", error);
         return res.status(500).json({
-            message: "Error while fetching the suggested user details",
-            success:false
-        })
+            message: "Internal server error",
+            success: false
+        });
     }
-}
+};
+
 
 const followOrUnfollow = async (req, res) => {
     try {

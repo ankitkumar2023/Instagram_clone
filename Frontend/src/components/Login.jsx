@@ -37,7 +37,7 @@ const Login = () => {
         try {
             setLoading(true);
             const response = await axios.post(
-              "https://instagram-clone-mu-weld.vercel.app/api/v1/user/login",
+              "http://localhost:8000/api/v1/user/login",
               input,
               {
                 header: {

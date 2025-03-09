@@ -6,7 +6,7 @@ import RightSideBar from './RightSideBar'
 const MainLayout = () => {
   return (
     <div>
-          <LeftSideBar/>
+      <LeftSideBar/>
       <Outlet>
         
       </Outlet>

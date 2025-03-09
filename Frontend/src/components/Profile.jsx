@@ -30,7 +30,7 @@ const Profile = () => {
   const handleFollowOrUnfollow = async () => {
     try {
       const res = await axios.post(
-        `https://instagram-clone-mu-weld.vercel.app/api/v1/user/followorunfollow/${userProfile?._id}`,
+        `http://localhost:8000/api/v1/user/followorunfollow/${userProfile?._id}`,
         {},
         { withCredentials: true }
       );

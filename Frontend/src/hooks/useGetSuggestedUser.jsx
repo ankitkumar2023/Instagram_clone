@@ -9,7 +9,7 @@ const useGetSuggestedUser = () => {
     const fetchSuggestedUser = async () => {
       try {
         const res = await axios.get(
-          "https://instagram-clone-mu-weld.vercel.app/api/v1/user/suggested",
+          "http://localhost:8000/api/v1/user/suggested",
           { withCredentials: true }
         );
 

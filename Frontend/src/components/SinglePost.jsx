@@ -46,7 +46,7 @@ const SinglePost = ({ post }) => {
   const deletePostHandler = async () => {
     try {
       const res = await axios.post(
-        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/delete/${post?._id}`,
+        `http://localhost:8000/api/v1/post/delete/${post?._id}`,
         {},
         { withCredentials: true }
       );
@@ -68,7 +68,7 @@ const SinglePost = ({ post }) => {
     const userAction = liked ? "dislike" : "like";
     try {
       const res = await axios.get(
-        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/${post?._id}/${userAction}`,
+        `http://localhost:8000/api/v1/post/${post?._id}/${userAction}`,
         { withCredentials: true }
       );
 
@@ -97,7 +97,7 @@ const SinglePost = ({ post }) => {
   const addCommentHandler = async () => {
     try {
       const res = await axios.post(
-        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/${post?._id}/comment`,
+        `http://localhost:8000/api/v1/post/${post?._id}/comment`,
         { text },
         {
           headers: {
@@ -136,7 +136,7 @@ const SinglePost = ({ post }) => {
   const handleBookmark = async () => {
     try {
       const res = await axios.get(
-        `https://instagram-clone-mu-weld.vercel.app/api/v1/post/${post?._id}/bookmark`,
+        `http://localhost:8000/api/v1/post/${post?._id}/bookmark`,
         { withCredentials: true }
       );
       if (res.data.success) {

@@ -8,37 +8,42 @@ const server = http.createServer(app);
 // Setting up the Socket.io server
 const io = new Server(server, {
     cors: {
-        origin: 'https://instagram-clone-mu-weld.vercel.app',
+        origin: 'http://localhost:5173', // Adjust this if your frontend runs on a different port
         methods: ["GET", "POST"]
     }
 });
 
-// Creating an object to store userId -> socketId mappings
-const userSocketMap = {}; // Changed from [] to {}
+// Storing userId -> socketId mappings
+const userSocketMap = {};
 
-
+// Function to get receiver socketId
 export const getReceiverSocketId = (receiverId) => {
-   return userSocketMap[receiverId]
-}
-// Establishing connection
+    return userSocketMap[receiverId] || null;
+};
+
+// Socket connection handling
 io.on('connection', (socket) => {
     const userId = socket.handshake.query.userId;
 
     if (userId) {
         userSocketMap[userId] = socket.id; // Store userId with corresponding socketId
-        console.log(`User connected: userId = ${userId}, socketId = ${socket.id}`);
+        console.log(`✅ User Connected -> userId: ${userId}, socketId: ${socket.id}`);
+        
+        // Emit updated online users list **after a short delay** to ensure stability
+        setTimeout(() => {
+            console.log("🔄 Updated Online Users List:", Object.keys(userSocketMap));
+            io.emit("getOnlineUsers", Object.keys(userSocketMap));
+        }, 500);
     }
-
-    // Sending online users list to frontend
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
     // Handling user disconnect
     socket.on("disconnect", () => {
         if (userId) {
-            delete userSocketMap[userId]; // Correct way to delete a key from an object
-            console.log(`User disconnected: userId = ${userId}, socketId = ${socket.id}`);
+            delete userSocketMap[userId]; // Remove user from online list
+            console.log(`❌ User Disconnected -> userId: ${userId}, socketId: ${socket.id}`);
         }
-        io.emit("getOnlineUsers", Object.keys(userSocketMap)); // Fixed event name (was "getOnLineUsers")
+        console.log("🔄 Updated Online Users List after disconnect:", Object.keys(userSocketMap));
+        io.emit("getOnlineUsers", Object.keys(userSocketMap)); // Notify clients of updated online users
     });
 });
 

@@ -31,7 +31,7 @@ const Signup = () => {
         try {
             setLoading(true);
             const response = await axios.post(
-              "https://instagram-clone-mu-weld.vercel.app/api/v1/user/register",
+              "http://localhost:8000/api/v1/user/register",
               input,
               {
                 headers: {

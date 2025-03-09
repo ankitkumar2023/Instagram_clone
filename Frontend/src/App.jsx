@@ -1,22 +1,20 @@
-import { createBrowserRouter, RouterProvider, } from 'react-router-dom';
-
-import Login from './components/Login.jsx';
-
-import Home from './components/Home.jsx';
-import Profile from './components/Profile.jsx';
-import MainLayout from './components/MainLayout.jsx';
-// import Signup from "./components/Signup.jsx"
-
-import EditProfile from './components/EditProfile.jsx';
-import ChatPage from './components/ChatPage.jsx';
-import {io} from "socket.io-client"
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { io } from "socket.io-client";
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSocket } from './redux/slice/socketSlice';
 import { setOnLineUsers } from './redux/slice/chatSlice';
 import { setLikeNotifications } from './redux/slice/notificationSlice';
-import Signup from './components/Signup.jsx';
 
+import Login from './components/Login.jsx';
+import Signup from './components/Signup.jsx';
+import Home from './components/Home.jsx';
+import Profile from './components/Profile.jsx';
+import MainLayout from './components/MainLayout.jsx';
+import EditProfile from './components/EditProfile.jsx';
+import ChatPage from './components/ChatPage.jsx';
+
+// Define Routes
 const browserRouter = createBrowserRouter([
   {
     path: '/',
@@ -24,80 +22,75 @@ const browserRouter = createBrowserRouter([
     children: [
       {
         path: '/',
-        element:<Home/>
+        element: <Home />
       },
       {
         path: '/profile/:id',
-        element:<Profile  />
+        element: <Profile />
       },
       {
         path: '/account/edit',
-        element:<EditProfile/>
+        element: <EditProfile />
       },
       {
         path: '/chat',
-        element:<ChatPage/>
+        element: <ChatPage />
       }
     ]
   },
   {
     path: "/signup",
-    element:<Signup/>
+    element: <Signup />
   },
   {
     path: '/login',
-    element:<Login/>
+    element: <Login />
   },
-  
-])
+]);
 
 function App() {
   const { user } = useSelector(store => store.auth);
-  const {socket} = useSelector(store=>store.socketio)
-  const dispatch = useDispatch()
+  const { socket } = useSelector(store => store.socketio);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (user) {
-      const socketio = io("https://instagram-clone-mu-weld.vercel.app", {
-        query: {
-          userId: user?._id,
-        },
+      console.log("🟢 Connecting to Socket.io with userId:", user?._id);
+
+      const socketio = io("http://localhost:8000", {
+        query: { userId: user?._id },
         transports: ["websocket"],
       });
+
       dispatch(setSocket(socketio));
 
-      //listning all the events that are comming from the backend
-
+      // Listening for online users
       socketio.on("getOnlineUsers", (onlineUsers) => {
+        console.log("📡 Received Online Users List:", onlineUsers);
         dispatch(setOnLineUsers(onlineUsers));
       });
 
-      //for notification
-
+      // Listening for notifications
       socketio.on("notification", (notification) => {
-        dispatch(setLikeNotifications(notification))
-      })
+        console.log("🔔 New Notification:", notification);
+        dispatch(setLikeNotifications(notification));
+      });
 
-
-
-      //cleanup function for-->like user dont logout but close the tab for
+      // Cleanup function when the user logs out or the tab closes
       return () => {
-        socketio.close();
-        dispatch(setSocket(null))
-      }
+        console.log("🔴 Disconnecting socket...");
+        socketio.disconnect();
+        dispatch(setSocket(null));
+      };
 
-    } else if(socket){
-     socket.close();
-      dispatch(setSocket(null))
+    } else if (socket) {
+      console.log("🔴 Closing socket due to logout...");
+      socket.disconnect();
+      dispatch(setSocket(null));
     }
-  },[user,dispatch])
-  return (
-    <>
-      <RouterProvider router={browserRouter} />
-      
-    </>
-  );
+  }, [user, dispatch]);
+
+  return <RouterProvider router={browserRouter} />;
 }
 
-
-
-export default App
+export default App;

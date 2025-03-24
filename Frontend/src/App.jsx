@@ -57,7 +57,7 @@ function App() {
     if (user) {
       console.log("🟢 Connecting to Socket.io with userId:", user?._id);
 
-      const socketio = io("http://localhost:8000", {
+      const socketio = io("https://instagram-backend-k7w6.onrender.com", {
         query: { userId: user?._id },
         transports: ["websocket"],
       });

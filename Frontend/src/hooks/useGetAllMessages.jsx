@@ -19,7 +19,7 @@ const useGetAllMessages = () => {
             try {
                 dispatch(setMessages([])); // Clear messages before fetching new ones
                 const res = await axios.get(
-                  `http://localhost:8000/api/v1/message/all/${selectedUser._id}`,
+                  `https://instagram-backend-k7w6.onrender.com/api/v1/message/all/${selectedUser._id}`,
                   { withCredentials: true }
                 );
                 if (res.data.success) {

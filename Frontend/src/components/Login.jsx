@@ -37,7 +37,7 @@ const Login = () => {
         try {
             setLoading(true);
             const response = await axios.post(
-              "http://localhost:8000/api/v1/user/login",
+              "https://instagram-backend-k7w6.onrender.com/api/v1/user/login",
               input,
               {
                 header: {

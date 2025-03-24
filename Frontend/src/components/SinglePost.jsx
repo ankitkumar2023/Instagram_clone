@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Avatar from "./ui/Avatar";
 import { BsThreeDots } from "react-icons/bs";
 import { MdCancel } from "react-icons/md";
@@ -22,12 +22,17 @@ const SinglePost = ({ post }) => {
   const dispatch = useDispatch();
   const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
   const [postLikedCount, setPostLikedCount] = useState(post.likes.length);
-  const [comment,setComment] = useState(post.comments)
+  const [comment, setComment] = useState(post.comments);
 
   console.log("user detail inside single post page", user);
+  console.log("post detail", post);
+
+  useEffect(() => {
+    setLiked(post.likes.includes(user?._id));
+  }, [post.likes, user?._id]);
 
   const HandlerChange = (e) => {
-    console.log(e.target.value)
+    console.log(e.target.value);
     if (e.target.value.trim() != "") {
       setText(e.target.value);
     } else {
@@ -46,7 +51,7 @@ const SinglePost = ({ post }) => {
   const deletePostHandler = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/post/delete/${post?._id}`,
+        `https://instagram-backend-k7w6.onrender.com/api/v1/post/delete/${post?._id}`,
         {},
         { withCredentials: true }
       );
@@ -67,26 +72,22 @@ const SinglePost = ({ post }) => {
   const likeAndDislikeHandler = async () => {
     const userAction = liked ? "dislike" : "like";
     try {
-      const res = await axios.get(
-        `http://localhost:8000/api/v1/post/${post?._id}/${userAction}`,
+      const res = await axios.post(
+        `https://instagram-backend-k7w6.onrender.com/api/v1/post/${post?._id}/${userAction}`,
+        {},
         { withCredentials: true }
       );
 
       if (res.data.success) {
         const updatedPostData = posts.map((postItem) =>
           postItem?._id === post?._id
-            ? {
-                ...postItem,
-                likes: liked
-                  ? postItem.likes.filter((uId) => uId !== user?._id)
-                  : [...postItem.likes, user?._id],
-              }
+            ? { ...postItem, likes: res.data.likes }
             : postItem
         );
 
-        dispatch(setPosts(updatedPostData)); // Update global Redux state
-        setLiked(!liked); // Update local state for immediate UI change
-        setPostLikedCount(liked ? postLikedCount - 1 : postLikedCount + 1);
+        dispatch(setPosts(updatedPostData));
+        setLiked(!liked);
+        setPostLikedCount(res.data.likes.length);
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -97,7 +98,7 @@ const SinglePost = ({ post }) => {
   const addCommentHandler = async () => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/post/${post?._id}/comment`,
+        `https://instagram-backend-k7w6.onrender.com/api/v1/post/${post?._id}/comment`,
         { text },
         {
           headers: {
@@ -136,7 +137,7 @@ const SinglePost = ({ post }) => {
   const handleBookmark = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/api/v1/post/${post?._id}/bookmark`,
+        `https://instagram-backend-k7w6.onrender.com/api/v1/post/${post?._id}/bookmark`,
         { withCredentials: true }
       );
       if (res.data.success) {
@@ -150,7 +151,7 @@ const SinglePost = ({ post }) => {
   return (
     <div className="my-6 w-full max-w-sm mx-60 relative bg-gray-100 p-2 rounded-sm">
       <div className="flex items-center justify-between gap-2">
-        <Link to={`/profile/${post.author?._id}`} >
+        <Link to={`/profile/${post.author?._id}`}>
           <div className="flex items-center gap-2 cursor-pointer">
             <Avatar
               src={`${post.author?.profilePicture}`}
@@ -159,11 +160,9 @@ const SinglePost = ({ post }) => {
               name={`${post.author?.username}`}
             />
             <h1>{post.author.username}</h1>
-            {
-              user?._id == post.author?._id && (<LuBadgeCheck className="bg-blue-400 rounded-full text-white"/>
-              )
-            }
-
+            {user?._id == post.author?._id && (
+              <LuBadgeCheck className="bg-blue-400 rounded-full text-white" />
+            )}
           </div>
         </Link>
 
@@ -231,22 +230,28 @@ const SinglePost = ({ post }) => {
           />
           <Send className="w-6 h-6 cursor-pointer hover:text-gray-600" />
         </div>
-        <Bookmark onClick={handleBookmark} className="cursor-pointer hover:text-gray-600" />
+        <Bookmark
+          onClick={handleBookmark}
+          className="cursor-pointer hover:text-gray-600"
+        />
       </div>
+
       <span className="font-medium block mb-2">{postLikedCount} likes</span>
+
       <p>
-        <span className="font-medium mr-2">{post.author?.username}</span>
+        <span className="font-medium mr-2">{post.author?.username} </span>
+        <span>{post?.caption}</span>
       </p>
-      {
-        comment.length > 0 && (<span
+      {comment.length > 0 && (
+        <span
           onClick={() => {
             console.log("View all comment clicked.."), setIsOpen(true);
           }}
           className="cursor-pointer text-sm text-gray-500"
         >
           View all {comment.length} comments
-        </span>)
-      }
+        </span>
+      )}
       <CommentDialog
         isOpen={isOpen}
         setIsOpen={setIsOpen}
@@ -254,7 +259,8 @@ const SinglePost = ({ post }) => {
         text={text}
         setText={setText}
         addCommentHandler={addCommentHandler}
-        user={user} />
+        user={user}
+      />
       <div className="flex justify-between items-center">
         <input
           type="text"
@@ -263,7 +269,14 @@ const SinglePost = ({ post }) => {
           placeholder="Add a comment...."
           className="outline-none text-sm w-full"
         />
-        {text && <span onClick={addCommentHandler} className="text-[#3BADF8] cursor-pointer">Post</span>}
+        {text && (
+          <span
+            onClick={addCommentHandler}
+            className="text-[#3BADF8] cursor-pointer"
+          >
+            Post
+          </span>
+        )}
       </div>
     </div>
   );

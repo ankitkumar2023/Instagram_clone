@@ -24,7 +24,7 @@ const LeftSideBar = () => {
     const logoutHandler = async() => {
         try {
             const response = await axios.get(
-              "http://localhost:8000/api/v1/user/logout",
+              "https://instagram-backend-k7w6.onrender.com/api/v1/user/logout",
               { withCredentials: true }
             );
             if (response.data.success) {

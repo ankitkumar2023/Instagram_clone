@@ -13,7 +13,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      const socketio = io("http://localhost:8000", {
+      const socketio = io("https://instagram-backend-k7w6.onrender.com", {
         query: { userId: user?._id },
         transports: ["websocket"],
       });

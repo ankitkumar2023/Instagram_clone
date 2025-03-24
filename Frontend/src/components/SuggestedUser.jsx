@@ -16,7 +16,7 @@ const SuggestedUser = () => {
   const handleFollowOrUnFollow = async (suggesteduser) => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/v1/user/followorunfollow/${suggesteduser?._id}`,
+        `https://instagram-backend-k7w6.onrender.com/api/v1/user/followorunfollow/${suggesteduser?._id}`,
         {},
         { withCredentials: true }
       );

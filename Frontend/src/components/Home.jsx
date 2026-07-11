@@ -9,6 +9,7 @@ const Home = () => {
   useGetAllPost();
   console.log("calling useGetsuggestedUser Hook ", useGetSuggestedUser())
   useGetSuggestedUser()
+  alert("You first need to create account or login to you account");
   return (
       <div className='flex'>
           <div className="flex-grow">

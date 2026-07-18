@@ -9,3 +9,4 @@ Currently, two official plugins are available:
 
 - always take care of these configuration and do not modify the core logic of it 
 - we have implemented the socket-io for real time notification.
+- we have upraded the ui
